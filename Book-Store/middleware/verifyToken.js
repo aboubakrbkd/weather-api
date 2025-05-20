@@ -6,6 +6,7 @@ const verifyToken = (req, res, next) => {
         res.status(401).json({message: 'Acces denied. No token provided'});
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log('Decoded is:', decoded); // logs the object structure directly
         req.user = decoded;
         next();
     } catch (err) {

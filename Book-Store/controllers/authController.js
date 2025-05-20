@@ -37,10 +37,26 @@ exports.login = async (req, res) => {
         const checkPassword = await bcrypt.compare(password, checkUser.password);
         if (!checkPassword)
             return res.status(400).json({message: "Password are incorrect"});
-        if (!checkUser.verified)
-            return res.status(403).json({ message: 'Email not verified' });
-        const accesToken = jwt.sign({username: checkUser.username}, process.env.JWT_SECRET, {expiresIn: '15m'});
-        const refreshToken = jwt.sign({username: checkUser.username}, process.env.JWT_REFRESH, {expiresIn: '7d'});
+        // if (!checkUser.verified)
+        //     return res.status(403).json({ message: 'Email not verified' });
+        const accesToken = jwt.sign(
+            {
+                id: checkUser._id,
+                username: checkUser.username,
+                role: checkUser.role,
+            }, 
+            process.env.JWT_SECRET,
+            {expiresIn: '15m'}
+        );
+        const refreshToken = jwt.sign(
+            {
+                id: checkUser.id,
+                username: checkUser.username,
+                role: checkUser.role,
+            }, 
+            process.env.JWT_REFRESH, 
+            {expiresIn: '7d'}
+        );
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: true,
